@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid;
+      allow update: if signedIn() && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // Postimet e blogut: publike për lexim, vetëm admin për shkrim
+    match /posts/{postId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Farms: public read, owner can write
+    match /farms/{farmId} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow update, delete: if signedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // Favorites: user can only manage their own
+    match /favorites/{userId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+  }
+}

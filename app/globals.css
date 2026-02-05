@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F6FBF6;
+  --primary-dark: #0B2416;
+  --primary: #1F7A3A;
+  --accent: #8BC34A;
+  --soft: #DDEEDB;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: #0f1a12;
+  margin: 0;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(11, 36, 22, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 36, 22, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
