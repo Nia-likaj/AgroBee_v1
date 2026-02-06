@@ -43,7 +43,7 @@ export default function Footer() {
 
           <div>
             <div className="text-sm font-semibold text-white">{t('contact')}</div>
-            <p className="mt-3 text-sm text-white/80">Email: info@agrobee.al</p>
+            <p className="mt-3 text-sm text-white/80">Email: agrobee.albania@gmail.com</p>
             <p className="mt-1 text-sm text-white/80">{t('location')}</p>
           </div>
         </div>

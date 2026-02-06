@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useTranslations, useLocale } from 'next-intl';
 import { calcGrowthRateScore, buildWeeklyGrowthSeries } from "@/lib/growth";
 import { useAuth } from "@/components/auth/AuthProvider";
+
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
   const locale = useLocale();

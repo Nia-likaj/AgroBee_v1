@@ -15,10 +15,8 @@ const intlMiddleware = createMiddleware({
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Apply i18n middleware first
-  const intlResponse = intlMiddleware(req);
-
   // Extract locale from path
+  const locale = pathname.match(/^\/(sq|en)/)?.[1] || defaultLocale;
   const pathnameWithoutLocale = pathname.replace(/^\/(sq|en)/, '') || '/';
 
   // Protect profile routes
@@ -26,7 +24,6 @@ export function middleware(req: NextRequest) {
     const token = req.cookies.get(AUTH_COOKIE)
     if (!token) {
       const url = req.nextUrl.clone()
-      const locale = pathname.match(/^\/(sq|en)/)?.[1] || defaultLocale;
       url.pathname = `/${locale}/login`
       return NextResponse.redirect(url)
     }
@@ -36,15 +33,15 @@ export function middleware(req: NextRequest) {
   if (pathnameWithoutLocale.startsWith('/admin')) {
     const token = req.cookies.get(AUTH_COOKIE)
     const role = req.cookies.get(ROLE_COOKIE)
-    if (!token || role !== 'admin') {
+    if (!token || role?.value !== 'admin') {
       const url = req.nextUrl.clone()
-      const locale = pathname.match(/^\/(sq|en)/)?.[1] || defaultLocale;
       url.pathname = `/${locale}/`
       return NextResponse.redirect(url)
     }
   }
 
-  return intlResponse;
+  // Apply i18n middleware for all other routes
+  return intlMiddleware(req);
 }
 
 export const config = {
