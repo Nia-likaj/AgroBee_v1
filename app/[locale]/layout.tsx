@@ -16,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{locale: string}>;
 }): Promise<Metadata> {
   const {locale} = await params;
-  const messages = (await import(`@/messages/${locale}.json`)).default;
+  const messages = (await import(`../../messages/${locale}.json`)).default;
   return {
     title: messages.meta?.title,
     description: messages.meta?.description,
@@ -37,7 +37,7 @@ export default async function LocaleLayout({
 
   let messages;
   try {
-    messages = (await import(`@/messages/${locale}.json`)).default;
+    messages = (await import(`../../messages/${locale}.json`)).default;
   } catch (error) {
     notFound();
   }
