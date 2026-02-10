@@ -79,30 +79,10 @@ export default function PreRegisterForm() {
       setLoading(false);
       return;
     }
-    
-    try {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        city: form.city,
-        userType: form.userType === 'tjeter' ? form.userTypeOther : form.userType,
-        interests: form.interests.join(', '),
-        products: form.products.join(', '),
-        activityLevel: form.activityLevel,
-        goal: form.goal,
-        to_email: "agrobee.albania@gmail.com",
-      }, EMAILJS_PUBLIC_KEY);
-      setSuccess(true);
-      setForm({
-        name: '', email: '', phone: '', city: '', userType: '', userTypeOther: '',
-        interests: [], products: [], productOther: '', activityLevel: '', goal: '',
-        privacy: false, marketing: false,
-      });
-    } catch (err) {
-      console.error(err);
-      setErrors({ send: true });
-    }
+
+    // Submit form - Netlify do ta kapi automatikisht
+    (e.target as HTMLFormElement).submit();
+    setSuccess(true);
     setLoading(false);
   };
 
@@ -112,7 +92,7 @@ export default function PreRegisterForm() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/images/gricultura.jpg')`,
+          backgroundImage: `url('/images/ Agricultura.jpg')`,
           filter: 'brightness(0.4)'
         }}
       />
@@ -133,7 +113,13 @@ export default function PreRegisterForm() {
             </p>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form 
+            onSubmit={handleSubmit} 
+            name="agrobee-preregister"
+            method="POST"
+            data-netlify="true"
+            className="space-y-6"
+          >
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
