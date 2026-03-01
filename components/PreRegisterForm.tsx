@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import emailjs from '@emailjs/browser';
 import {useTranslations, useLocale} from 'next-intl';
 
 const userTypeKeys = ['fermer', 'agroperpunues', 'kooperative', 'agroturizem', 'b2b', 'agronom', 'tjeter'];
@@ -39,10 +38,6 @@ export default function PreRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const EMAILJS_SERVICE_ID = "your_service_id";
-  const EMAILJS_TEMPLATE_ID = "your_template_id";
-  const EMAILJS_PUBLIC_KEY = "your_public_key";
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -65,25 +60,58 @@ export default function PreRegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrors({});
-    
+
+    // Validation
     if (!form.name || !form.email || !form.city || !form.userType || !form.privacy) {
       setErrors({ required: true });
-      setLoading(false);
       return;
     }
-    
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
       setErrors({ email: true });
-      setLoading(false);
       return;
     }
 
-    // Submit form - Netlify do ta kapi automatikisht
-    (e.target as HTMLFormElement).submit();
-    setSuccess(true);
-    setLoading(false);
+    setLoading(true);
+    try {
+      const body = new URLSearchParams({
+        'form-name': 'agrobee-preregister',
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        city: form.city,
+        userType: form.userType,
+        userTypeOther: form.userTypeOther,
+        interests: form.interests.join(', '),
+        products: form.products.join(', '),
+        productOther: form.productOther,
+        activityLevel: form.activityLevel,
+        goal: form.goal,
+        privacy: form.privacy ? 'po' : 'jo',
+        marketing: form.marketing ? 'po' : 'jo',
+      });
+
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        setForm({
+          name: '', email: '', phone: '', city: '', userType: '',
+          userTypeOther: '', interests: [], products: [], productOther: '',
+          activityLevel: '', goal: '', privacy: false, marketing: false,
+        });
+      } else {
+        setErrors({ send: true });
+      }
+    } catch {
+      setErrors({ send: true });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -113,13 +141,17 @@ export default function PreRegisterForm() {
             </p>
           </div>
           
-          <form 
-            onSubmit={handleSubmit} 
+          <form
+            onSubmit={handleSubmit}
             name="agrobee-preregister"
             method="POST"
             data-netlify="true"
+            netlify-honeypot="bot-field"
             className="space-y-6"
           >
+            {/* Required hidden fields for Netlify */}
+            <input type="hidden" name="form-name" value="agrobee-preregister" />
+            <input type="hidden" name="bot-field" />
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
